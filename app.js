@@ -3,7 +3,7 @@ const axios = require("axios");
 const {join} = require("node:path");
 const app = express();
 const port = process.env.PORT || 3001;
-const dotenv = require('dotenv').config();
+const dotenv = require('dotenv');
 // Middleware to parse JSON and URL-encoded bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
