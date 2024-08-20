@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const axios = require("axios");
 const port = process.env.PORT || 3001;
 
 app.get("/", (req, res) => res.type('html').send(html));
@@ -8,7 +9,41 @@ const server = app.listen(port, () => console.log(`Example app listening on port
 
 server.keepAliveTimeout = 120 * 1000;
 server.headersTimeout = 120 * 1000;
+app.post('/submit', async (req, res) => {
+    const data = req.body;
+    //use the data to put in the url and make call to api
+    console.log(data);
+    //query for the city from the data
+    const {city, state, country} = req.body; // Destructuring for cleaner access
+    console.log(city, state, country);
+    try {
+        //make a call to the api with the data
+        const response = await axios.get(`https://api.airvisual.com/v2/city?city=${city}&state=${state}&country=${country}&key=5f16b0de-366b-497d-98e8-9ff9f2de8d33`);
+        const airQualityData = response.data.data;
+        // Extract necessary details
+        const { current: { pollution, weather } } = airQualityData;
+        const pollutionInfo = `AQI (US): ${pollution.aqius}, Main Pollutant (US): ${pollution.mainus}, AQI (CN): ${pollution.aqicn}, Main Pollutant (CN): ${pollution.maincn}`;
+        const weatherInfo = `Temperature: ${weather.tp}°C, Pressure: ${weather.pr} hPa, Humidity: ${weather.hu}%, Wind Speed: ${weather.ws} m/s, Wind Direction: ${weather.wd}°, Icon: ${weather.ic}`;
 
+        // Construct HTML string
+        const htmlContent = `
+      <h1 id="detailsContainer" style="text-align: center; margin-top: 50vh; transform: translateY(-50%);">
+        Air Quality Data for ${city}, ${state}, ${country}
+      </h1>
+      <p style="text-align: center;">Pollution Info: ${pollutionInfo}</p>
+      <p style="text-align: center;">Weather Info: ${weatherInfo}</p>
+    `;
+
+        // Send the HTML string in the response
+        res.send(htmlContent);
+
+    } catch (error) {
+        console.log(error);
+    }
+});
+let city;
+let state;
+let country;
 const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -28,22 +63,7 @@ const html = `
         });
       }, 500);
     </script>
-<style>
-      @import url("https://p.typekit.net/p.css?s=1&k=vnd5zic&ht=tk&f=39475.39476.39477.39478.39479.39480.39481.39482&a=18673890&app=typekit&e=css");
-      @font-face {
-        font-family: "neo-sans";
-        src: url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("woff2"), url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("woff"), url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("opentype");
-        font-style: normal;
-        font-weight: 700;
-      }
-      html {
-        font-family: neo-sans;
-        font-weight: 700;
-      }
-      body {
-        background: white;
-        font-family: neo-sans;
-      }
+<style> 
       section {
         border-radius: 1em;
         padding: 1em;
@@ -53,6 +73,7 @@ const html = `
         margin-right: -50%;
         transform: translate(-50%, -50%);
       }
+      
       #IQAirCard {
           position: relative; /* Ensure the card is the positioning context for absolute elements */
           color: #1F348B;
@@ -64,6 +85,7 @@ const html = `
           border: 1px solid rgba(255, 255, 255, 0.18);
           overflow: hidden;
       }
+      
       #IQAirCard::before {
           content: "";
           /* Ensure the path is correct */
