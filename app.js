@@ -157,7 +157,7 @@ const html = `
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form action="/submit" method="post">
+            <form action="/submit" method="post" enctype="multipart/form-data">
               <div class="mb-3">
                   <label class="form-label" for="city">City:</label>
                   <input class="form-control" type="text" id="city" name="city" placeholder="Enter City" required>
