@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Locations</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Leaflet.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        /* Sidebar Styling */
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            padding-top: 20px;
+            border-right: 1px solid #ddd;
+        }
+
+        .sidebar .nav-link {
+            font-size: 18px;
+            padding: 10px 15px;
+            color: #333;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .sidebar footer {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+        }
+
+        /* Main Content */
+        main {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        /* Card Styling */
+        .card {
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* nav icons*/
+        /* Alerts Dropdown Styling */
+        .alerts-dropdown {
+            position: absolute;
+            top: 75px;
+            right: 0;
+            width: 250px;
+            background: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+            padding: 10px;
+        }
+
+        .alerts-dropdown h6 {
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .alerts-dropdown p {
+            font-size: 14px;
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .alerts-dropdown p:last-child {
+            border-bottom: none;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-white sidebar">
+            <h1 class="logo text-primary text-center py-3">UrbanAir</h1>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a href="/index" class="nav-link">Dashboard</a></li>
+                <li class="nav-item"><a href="/locations" class="nav-link">Locations</a></li>
+                <li class="nav-item"><a href="/maps" class="nav-link">Maps</a></li>
+                <li class="nav-item"><a href="/reports" class="nav-link">Reports</a></li>
+                <li class="nav-item"><a href="/analytics" class="nav-link">Analytics</a></li>
+                <li class="nav-item"><a href="/settings" class="nav-link">Settings</a></li>
+            </ul>
+            <footer class="text-muted text-center py-3">UrbanAir ©2025</footer>
+        </nav>
+
+            <!-- Main Content -->
+        <main class="col-md-9 col-lg-10 px-4">
+            <!-- HTML structure to display multiple city AQI -->
+            <div id="mutiple-city-aqi" class="row">
+                <!-- AQI cards will be injected here -->
+            </div>
+        </main>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Leaflet.js JS -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // List of cities for AQI data
+        var cities = ["london", "newyork", "seoul", "guangzhou", "tokyo", "shanghai", "paris", "hongkong"];
+
+        // Configuring the AQI widget
+        var aqiWidgetConfig = [];
+        cities.forEach(function(city) {
+            aqiWidgetConfig.push({
+                city: city,
+                callback: displayCity // Define the callback to handle AQI data
+            });
+        });
+
+        // Call the API with the widget configuration
+        _aqiFeed(aqiWidgetConfig);
+
+        // Callback function to display AQI data for each city
+        function displayCity(aqi) {
+            const cityName = aqi.cityName; // The city name from the API response
+            const cityAQI = aqi.aqiValue; // The AQI value from the API response
+            const date = new Date(aqi.timestamp).toLocaleDateString(); // The date when the data was retrieved
+
+            // Append AQI information to the container
+            const aqiCard = `
+            <div class="col-md-4">
+                <div class="card p-3 text-center shadow-sm">
+                    <h5 class="fw-bold">${cityName}</h5>
+                    <p class="fs-2">${cityAQI}</p>
+                    <p class="text-muted"><small>${date}</small></p>
+                </div>
+            </div>
+        `;
+            document.getElementById('mutiple-city-aqi').innerHTML += aqiCard; // Append to the container
+        }
+    });
+
+    // Sample AQI Feed function (This should interact with your backend or external service)
+    function _aqiFeed(config) {
+        // Simulate fetching AQI data for each city (in a real scenario, you would use an API here)
+        config.forEach((item, index) => {
+            const aqiData = {
+                cityName: item.city.charAt(0).toUpperCase() + item.city.slice(1), // Capitalize city name
+                aqiValue: Math.floor(Math.random() * 300) + 1, // Simulate an AQI value
+                timestamp: Date.now() // Current timestamp
+            };
+            item.callback(aqiData); // Call the displayCity function with the simulated AQI data
+        });
+    }
+</script>
+
+</body>
+</html>
