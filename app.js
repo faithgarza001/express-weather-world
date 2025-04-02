@@ -2,8 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
-const redis = require('redis');
-const client = redis.createClient();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,23 +12,12 @@ app.use(express.json()); // Enable JSON body parsing
 app.use(express.static(path.join(__dirname, 'public', 'views')));
 app.use(express.static(path.join(__dirname,'public',  'scripts')));  // Serve static files in 'scripts' folder
 
-client.on('error', (err) => console.error('Redis error:', err));
-client.connect(); // If using Redis v4
 
 console.log('API_KEY:', process.env.PIRATE_WEATHER_API);
 console.log('IQ_API:', process.env.IQAIR_API_TOKEN);
 console.log(`Server running on http://localhost:${PORT}`);
 
-//Cache logic helpers
 
-async function getCache(key) {
-    const value = await client.get(key);
-    return value ? JSON.parse(value) : null;
-}
-
-async function setCache(key, value, ttl = 1800) { // 30 minutes
-    await client.setEx(key, ttl, JSON.stringify(value));
-}
 
 
 // Test end point: JSONPlaceholder API (simulated data)
