@@ -1,8 +1,6 @@
 // a client-side JavaScript file that will make HTTP requests to a weather API and handle the response data, possibly to display weather information on a web page
 //fetch the data from the weather post method and display it on the page
-// public/scripts/weather/fetch.js
 console.log("Fetch.js loaded");
-// fetch.js
 
 // Function to fetch weather data from the backend
 async function fetchWeather() {
