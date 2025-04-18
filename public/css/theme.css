@@ -1,0 +1,291 @@
+/* UrbanAir CSS Theme with CSS Variables */
+:root {
+    /* Brand Colors */
+    --brand-primary: #5b6dfa;
+    --brand-accent: #3d52d5;
+    --text-primary: #1f1f1f;
+    --text-muted: #6c757d;
+    --background-light: #f5f7fa;
+    --background-card: #ffffff;
+    --border-light: #e0e0e0;
+
+    /* Typography */
+    --font-family: 'Inter', sans-serif;
+    --font-size-base: 1rem;
+    --font-size-heading: 1.5rem;
+    --font-weight-bold: 700;
+
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+
+    /* Border Radius */
+    --radius: 1rem;
+
+    /* Shadows */
+    --shadow-card: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--background-light);
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
+    margin: 0;
+    padding: 0;
+}
+.sidebar {
+    background-color: #ffffff;
+    border-radius: 2rem;
+    padding: 2rem 1rem;
+    margin: 2rem 1rem;
+    min-height: calc(100vh - 4rem);
+    box-shadow:
+            inset 0 0 0 1px rgba(0, 0, 0, 0.03),
+            0 30px 60px rgba(0, 0, 0, 0.1),
+            0 10px 20px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+}
+
+/* Sidebar text and links */
+.sidebar .logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--brand-primary);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.sidebar .nav-link {
+    color: var(--text-muted);
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    transition: background 0.3s, color 0.3s;
+}
+
+.sidebar .nav-link:hover {
+    background-color: var(--brand-primary);
+    color: white;
+}
+
+.sidebar footer {
+    font-size: 0.85rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+
+.nav-link {
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-sm);
+}
+
+.nav-link:hover {
+    color: var(--brand-primary);
+}
+
+.card {
+    background: var(--background-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+}
+
+.card h5 {
+    font-size: 1rem;
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-xs);
+}
+
+#mainIcon {
+    font-size: 4rem;
+}
+
+input[type="text"].form-control {
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+}
+
+.alerts-dropdown {
+    position: absolute;
+    right: 1rem;
+    top: 3rem;
+    background: var(--background-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: var(--spacing-sm);
+    box-shadow: var(--shadow-card);
+    display: none;
+    z-index: 1000;
+}
+
+#dailyForecast .card {
+    transition: transform 0.2s ease;
+}
+
+#dailyForecast .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: var(--spacing-lg);
+}
+
+
+/* Weather Card Enhancements */
+.card {
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    background: var(--background-card);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* Main Weather Icon */
+#mainIcon {
+    font-size: 6rem;
+    display: block;
+    text-align: center;
+    margin-top: var(--spacing-sm);
+}
+
+/* Forecast Row */
+#dailyForecast {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    justify-content: space-between;
+}
+
+#dailyForecast .col-md-4,
+#dailyForecast .col-md-3 {
+    flex: 1 1 calc(33.333% - var(--spacing-sm));
+    max-width: calc(33.333% - var(--spacing-sm));
+}
+
+#dailyForecast .card {
+    text-align: center;
+    padding: var(--spacing-sm);
+}
+
+/* Info Boxes */
+.row .card h5 {
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.row .card p {
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+/* Dashboard Layout Adjustments */
+main {
+    background-color: var(--background-light);
+    padding-top: var(--spacing-md);
+}
+
+input[type='text'].form-control {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+}
+
+/* Alerts Row */
+.d-flex.gap-3 span {
+    font-size: 0.9rem;
+    padding: 0.2rem 0.6rem;
+    background: #f1f1f1;
+    border-radius: 20px;
+}
+
+/* Weather Card Enhancements */
+.card {
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    background: var(--background-card);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* Main Weather Icon */
+#mainIcon {
+    font-size: 6rem;
+    display: block;
+    text-align: center;
+    margin-top: var(--spacing-sm);
+}
+
+/* Forecast Row */
+#dailyForecast {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    justify-content: space-between;
+}
+
+#dailyForecast .col-md-4,
+#dailyForecast .col-md-3 {
+    flex: 1 1 calc(33.333% - var(--spacing-sm));
+    max-width: calc(33.333% - var(--spacing-sm));
+}
+
+#dailyForecast .card {
+    text-align: center;
+    padding: var(--spacing-sm);
+}
+
+/* Info Boxes */
+.row .card h5 {
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.row .card p {
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+/* Dashboard Layout Adjustments */
+main {
+    background-color: var(--background-light);
+    padding-top: var(--spacing-md);
+}
+
+input[type='text'].form-control {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+}
+
+/* Alerts Row */
+.d-flex.gap-3 span {
+    font-size: 0.9rem;
+    padding: 0.2rem 0.6rem;
+    background: #f1f1f1;
+    border-radius: 20px;
+}
+

@@ -14,6 +14,22 @@ app.get('/', (req, res) => {
     res.sendFile(join(__dirname, 'public', 'views', 'index.html'));
 });
 
+app.get('/locations', (req, res) => {
+    res.sendFile(join(__dirname, 'public', 'views', 'locations.html'));
+});
+
+app.get('/maps', (req, res) => {
+    res.sendFile(join(__dirname, 'public', 'views', 'maps.html'));
+});
+
+app.get('/reports', (req, res) => {
+    res.sendFile(join(__dirname, 'public', 'views', 'reports.html'));
+});
+
+app.get('/settings', (req, res) => {
+    res.sendFile(join(__dirname, 'public', 'views', 'settings.html'));
+});
+
 app.post('/api/location', async (req, res) => {
     const { latitude, longitude } = req.body;
     try {
