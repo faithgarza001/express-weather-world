@@ -3,6 +3,7 @@
     /* Brand Colors */
     --brand-primary: #5b6dfa;
     --brand-accent: #3d52d5;
+    --brand-secondary: #1E3A5F;
     --text-primary: #1f1f1f;
     --text-muted: #6c757d;
     --background-light: #f5f7fa;
@@ -14,6 +15,7 @@
     --font-size-base: 1rem;
     --font-size-heading: 1.5rem;
     --font-weight-bold: 700;
+
 
     /* Spacing */
     --spacing-xs: 0.5rem;
@@ -289,3 +291,6 @@ input[type='text'].form-control {
     border-radius: 20px;
 }
 
+.secondary_text {
+    color:var(--brand-secondary);
+}

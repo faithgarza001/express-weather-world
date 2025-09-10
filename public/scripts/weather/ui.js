@@ -39,3 +39,4 @@ function displayWeather(data) {
         <p>Humidity: ${data.currently.humidity}</p>
     `;
 }
+

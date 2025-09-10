@@ -22,11 +22,28 @@ async function fetchWeather() {
 
 // Function to display weather data on the dashboard
 function displayWeather(data) {
+   console.log("Weather Data:", data); // Debug log
     // Geolocation and Location
     document.getElementById('geolocation').innerText = `📍 Geolocation: ${data.latitude}, ${data.longitude}`;
+    //get the name of the city and state from the data
     document.getElementById('location').innerText = `🌍 Location: ${data.timezone}`;
 
-    // Main Weather Icon
+    function getDayName(number) {
+        const date = new Date(number);
+        return date.toLocaleDateString('en-US', { weekday: 'long' });
+
+    }
+
+    //add temperature high and low in id of locations
+    document.getElementById('locations').innerHTML += `
+        <h3 class="fw-bold secondary_text">${getDayName(data.daily.data[0].time * 1000)}</h3>
+        <small class="fw-bold secondary_text">${new Date(data.daily.data[0].time * 1000).toLocaleDateString()}</small>
+        <!--- the current temperature -->
+        <h3>Current Temperature: ${data.currently.temperature}</h3>
+        
+        
+        <h4 class="fw-bold secondary_text">High: ${data.daily.data[0].temperatureHigh}°F / Low: ${data.daily.data[0].temperatureLow}°F</h4>`;
+    // Main Weather Icon    // Main Weather Icon
     const mainIcon = document.getElementById('mainIcon');
     mainIcon.innerText = getWeatherIcon(data.currently.icon); // Use a helper function to map weather icons
 
@@ -51,10 +68,10 @@ function displayWeather(data) {
         if (index === 0) return; // Skip today since it's already displayed
         const forecastDate = new Date(day.time * 1000).toLocaleDateString();
         const forecastHTML = `
-            <div class="col-md-4 text-center">
-                <p>${forecastDate}</p>
+            <div class="col-md-4 text-center card">
+                <small class="fw-bold secondary_text">${forecastDate}</small>
                 <p>${getWeatherIcon(day.icon)}</p>
-                <p>${day.temperatureHigh}°F / ${day.temperatureLow}°F</p>
+                <p>${day.temperatureHigh}°F / ${day.temperatureLow}°C</p>
             </div>
         `;
         dailyForecast.innerHTML += forecastHTML;
@@ -92,7 +109,7 @@ function calculateDayLength(sunriseTime, sunsetTime) {
 // Fetch weather data when the page loads
 window.onload = fetchWeather;
 
-/*// main.js (Cleaned up version with 30-minute cache and no duplicate DOMContentLoaded)
+// main.js (Cleaned up version with 30-minute cache and no duplicate DOMContentLoaded)
 
 document.addEventListener('DOMContentLoaded', () => {
     const calendarInput = document.getElementById('calendarInput');
@@ -345,4 +362,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-*/
+
