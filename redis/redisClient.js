@@ -6,8 +6,9 @@ const redis = require('redis');
 //   port: 6379,
 // });
 
-const client = redis.createClient();  // Default to localhost:6379
-
+const client = redis.createClient({
+    url: process.env.REDIS_URL, // Set this in Render environment variables
+});
 client.connect().catch((err) => {
     console.error('Error connecting to Redis:', err);
 });
