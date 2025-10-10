@@ -11,13 +11,25 @@ app.use(express.json()); // Enable JSON body parsing
 
 app.use(express.static(path.join(__dirname, 'public', 'views')));
 app.use(express.static(path.join(__dirname,'public',  'scripts')));  // Serve static files in 'scripts' folder
-
+app.use(express.static('public'));
 
 console.log('API_KEY:', process.env.PIRATE_WEATHER_API);
 console.log('IQ_API:', process.env.IQAIR_API_TOKEN);
 console.log(`Server running on http://localhost:${PORT}`);
 
+/*import OpenAI from "openai";
 
+const openai = new OpenAI({
+    apiKey: "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",
+});
+
+const response = openai.responses.create({
+    model: "gpt-4o-mini",
+    input: "write a haiku about ai",
+    store: true,
+});
+
+response.then((result) => console.log(result.output_text));*/
 
 
 // Test end point: JSONPlaceholder API (simulated data)
@@ -164,33 +176,38 @@ app.post('/weather', async (req, res) => {
 });
 
 // Serve index.html when accessing the root URL
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+
+// Serve index.html when accessing the /index URL
 app.get('/index', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public','views', 'index.html'));
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
 // Serve locations.html when accessing the /locations URL
 app.get('/locations', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'views', 'locations.html'));
+    res.sendFile(path.join(__dirname, 'views', 'locations.html'));
 });
 
 // Serve maps.html when accessing the /maps URL
 app.get('/maps', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'views', 'maps.html'));
+    res.sendFile(path.join(__dirname, 'views', 'maps.html'));
 });
 
 // Serve reports.html when accessing the /reports URL
 app.get('/reports', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'views', 'reports.html'));
+    res.sendFile(path.join(__dirname, 'views', 'reports.html'));
 });
 
 // Serve analytics.html when accessing the /analytics URL
 app.get('/analytics', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'views', 'analytics.html'));
+    res.sendFile(path.join(__dirname, 'views', 'analytics.html'));
 });
 
 // Serve settings.html when accessing the /settings URL
 app.get('/settings', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'views', 'settings.html'));
+    res.sendFile(path.join(__dirname, 'views', 'settings.html'));
 });
 
 
