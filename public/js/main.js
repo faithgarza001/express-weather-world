@@ -1,3 +1,114 @@
+// a client-side JavaScript file that will make HTTP requests to a weather API and handle the response data, possibly to display weather information on a web page
+//fetch the data from the weather post method and display it on the page
+console.log("Fetch.js loaded");
+
+// Function to fetch weather data from the backend
+async function fetchWeather() {
+    try {
+        const response = await fetch('/api/weather'); // Fetch weather data from the backend
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const weatherData = await response.json(); // Parse the JSON response
+        displayWeather(weatherData); // Pass the data to the display function
+    } catch (error) {
+        console.error('❌ Error fetching weather data:', error.message);
+        document.getElementById('weather').innerText = 'Failed to load weather data.';
+    }
+}
+
+// Function to display weather data on the page
+// fetch.js
+
+// Function to display weather data on the dashboard
+function displayWeather(data) {
+   console.log("Weather Data:", data); // Debug log
+    // Geolocation and Location
+    document.getElementById('geolocation').innerText = `📍 Geolocation: ${data.latitude}, ${data.longitude}`;
+    //get the name of the city and state from the data
+    document.getElementById('location').innerText = `🌍 Location: ${data.timezone}`;
+
+    function getDayName(number) {
+        const date = new Date(number);
+        return date.toLocaleDateString('en-US', { weekday: 'long' });
+
+    }
+
+    //add temperature high and low in id of locations
+    document.getElementById('locations').innerHTML += `
+        <h3 class="fw-bold secondary_text">${getDayName(data.daily.data[0].time * 1000)}</h3>
+        <small class="fw-bold secondary_text">${new Date(data.daily.data[0].time * 1000).toLocaleDateString()}</small>
+        <!--- the current temperature -->
+        <h3>Current Temperature: ${data.currently.temperature}</h3>
+        
+        
+        <h4 class="fw-bold secondary_text">High: ${data.daily.data[0].temperatureHigh}°F / Low: ${data.daily.data[0].temperatureLow}°F</h4>`;
+    // Main Weather Icon    // Main Weather Icon
+    const mainIcon = document.getElementById('mainIcon');
+    mainIcon.innerText = getWeatherIcon(data.currently.icon); // Use a helper function to map weather icons
+
+    // Weather Details
+    document.getElementById('rain').innerText = `${data.currently.humidity * 100}%`;
+    document.getElementById('uv').innerText = `${data.currently.uvIndex}`;
+    document.getElementById('windFactor').innerText = `${data.currently.windSpeed} mph`;
+
+    // Sunrise and Sunset
+    const sunriseTime = new Date(data.daily.data[0].sunriseTime * 1000).toLocaleTimeString();
+    const sunsetTime = new Date(data.daily.data[0].sunsetTime * 1000).toLocaleTimeString();
+    const dayLength = calculateDayLength(data.daily.data[0].sunriseTime, data.daily.data[0].sunsetTime);
+
+    document.getElementById('sunrise').innerText = `🌅 Sunrise: ${sunriseTime}`;
+    document.getElementById('sunset').innerText = `🌇 Sunset: ${sunsetTime}`;
+    document.getElementById('length').innerText = `⏳ Length of Day: ${dayLength}`;
+
+    // 7-Day Forecast
+    const dailyForecast = document.getElementById('dailyForecast');
+    dailyForecast.innerHTML = ''; // Clear any existing forecast data
+    data.daily.data.forEach((day, index) => {
+        if (index === 0) return; // Skip today since it's already displayed
+        const forecastDate = new Date(day.time * 1000).toLocaleDateString();
+        const forecastHTML = `
+            <div class="col-md-4 text-center card">
+                <small class="fw-bold secondary_text">${forecastDate}</small>
+                <p>${getWeatherIcon(day.icon)}</p>
+                <p>${day.temperatureHigh}°F / ${day.temperatureLow}°C</p>
+            </div>
+        `;
+        dailyForecast.innerHTML += forecastHTML;
+    });
+
+    // Other Cities (Placeholder for now)
+    const weatherContainer = document.getElementById('weatherContainer');
+    weatherContainer.innerHTML = '<p>Other cities feature coming soon...</p>';
+}
+
+// Helper function to map weather icons
+function getWeatherIcon(icon) {
+    const iconMap = {
+        'clear-day': '☀️',
+        'clear-night': '🌙',
+        'rain': '🌧️',
+        'snow': '❄️',
+        'sleet': '🌨️',
+        'wind': '💨',
+        'fog': '🌫️',
+        'cloudy': '☁️',
+        'partly-cloudy-day': '⛅',
+        'partly-cloudy-night': '🌥️',
+    };
+    return iconMap[icon] || '❓'; // Default to a question mark if the icon is unknown
+}
+
+// Helper function to calculate day length
+function calculateDayLength(sunriseTime, sunsetTime) {
+    const diffInSeconds = sunsetTime - sunriseTime;
+    const hours = Math.floor(diffInSeconds / 3600);
+    const minutes = Math.floor((diffInSeconds % 3600) / 60);
+    return `${hours}h ${minutes}m`;
+}
+// Fetch weather data when the page loads
+window.onload = fetchWeather;
+
 // main.js (Cleaned up version with 30-minute cache and no duplicate DOMContentLoaded)
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -250,4 +361,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+
 
