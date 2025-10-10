@@ -17,19 +17,7 @@ console.log('API_KEY:', process.env.PIRATE_WEATHER_API);
 console.log('IQ_API:', process.env.IQAIR_API_TOKEN);
 console.log(`Server running on http://localhost:${PORT}`);
 
-/*import OpenAI from "openai";
 
-const openai = new OpenAI({
-    apiKey: "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",
-});
-
-const response = openai.responses.create({
-    model: "gpt-4o-mini",
-    input: "write a haiku about ai",
-    store: true,
-});
-
-response.then((result) => console.log(result.output_text));*/
 
 
 // Test end point: JSONPlaceholder API (simulated data)
@@ -47,18 +35,6 @@ axios.get(url)
     });
 
 
-
-/*const IQUrl = `https://api.airvisual.com/v2/nearest_city?lat=40.7128&lon=-74.0060&key=${IQ_API}`;
-// Simple GET request for Air Quality Data using Axios returns object object due to the nested structure of the response need to stringify or access data properties directly
-axios.get(IQUrl)
-    .then(response => {
-        // Log the response data to ensure the request works
-        console.log('Air Quality Response data:', response.data);
-    })
-    .catch(error => {
-        // Log any errors that occur
-        console.error('Error making the Air Quality request:', error.message);
-    });*/
 
 async function fetchWeatherData() {
     const IQAirUrl = `https://api.airvisual.com/v2/nearest_city?lat=40.7128&lon=-74.0060&key=${IQ_API}`;
