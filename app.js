@@ -18,8 +18,6 @@ console.log('IQ_API:', process.env.IQAIR_API_TOKEN);
 console.log(`Server running on http://localhost:${PORT}`);
 
 
-
-
 // Test end point: JSONPlaceholder API (simulated data)
 const url = 'https://jsonplaceholder.typicode.com/posts/1';
 
