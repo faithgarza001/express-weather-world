@@ -345,3 +345,51 @@ main {
     .other-cities-row { flex-direction: column; }
     .main-weather-img { width: 120px; }
 }
+
+.modal-body {
+  max-width: 1140px;
+  max-height: 787px;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  background: #f8faff;
+  border-radius: 16px;
+  box-sizing: border-box;
+  padding: 24px 18px;
+  overflow: auto;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.12);
+}
+
+.ratio.ratio-16x9 {
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e7edfe;
+}
+
+#projectPreviewFrame {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(80,116,232,0.10);
+  background: #fff;
+}
+
+@media (max-width: 1200px) {
+  .modal-body {
+    padding: 12px 4px;
+    max-width: 98vw;
+    max-height: 90vh;
+  }
+  .ratio.ratio-16x9 {
+    border-radius: 8px;
+  }
+  #projectPreviewFrame {
+    border-radius: 8px;
+  }
+}
