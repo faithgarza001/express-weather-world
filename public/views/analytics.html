@@ -2,113 +2,129 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Weather Locations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UrbanAir • Analytics</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Leaflet.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <style>
-        /* Sidebar Styling */
-        .sidebar {
-            height: 100vh;
-            position: fixed;
-            width: 250px;
-            padding-top: 20px;
-            border-right: 1px solid #ddd;
-        }
-
-        .sidebar .nav-link {
-            font-size: 18px;
-            padding: 10px 15px;
-            color: #333;
-        }
-
-        .sidebar .nav-link:hover {
-            background-color: #3498db;
-            color: white;
-            border-radius: 5px;
-        }
-
-        .sidebar footer {
-            position: absolute;
-            bottom: 10px;
-            width: 100%;
-        }
-
-        /* Main Content */
-        main {
-            margin-left: 250px;
-            padding: 20px;
-        }
-
-        /* Card Styling */
-        .card {
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        /* nav icons*/
-        /* Alerts Dropdown Styling */
-        .alerts-dropdown {
-            position: absolute;
-            top: 75px;
-            right: 0;
-            width: 250px;
-            background: white;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 5px;
-            display: none;
-            z-index: 1000;
-            padding: 10px;
-        }
-
-        .alerts-dropdown h6 {
-            margin-bottom: 10px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .alerts-dropdown p {
-            font-size: 14px;
-            margin: 5px 0;
-            padding: 5px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .alerts-dropdown p:last-child {
-            border-bottom: none;
-        }
-
-    </style>
 </head>
 <body>
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block bg-white sidebar">
-            <h1 class="logo text-primary text-center py-3">UrbanAir</h1>
-            <ul class="nav flex-column">
-                <li class="nav-item"><a href="/index" class="nav-link">Dashboard</a></li>
-                <li class="nav-item"><a href="/locations" class="nav-link">Locations</a></li>
-                <li class="nav-item"><a href="/maps" class="nav-link">Maps</a></li>
-                <li class="nav-item"><a href="/reports" class="nav-link">Reports</a></li>
-                <li class="nav-item"><a href="/analytics" class="nav-link">Analytics</a></li>
-                <li class="nav-item"><a href="/settings" class="nav-link">Settings</a></li>
-            </ul>
-            <footer class="text-muted text-center py-3">UrbanAir ©2025</footer>
+        <!-- Sidebar/Navbar (same as index) -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light flex-lg-column align-items-center sidebar p-0">
+            <div class="container-fluid flex-lg-column">
+                <a class="navbar-brand logo" href="#">UrbanAir</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarNav" aria-controls="sidebarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse w-100" id="sidebarNav">
+                    <ul class="navbar-nav flex-lg-column align-items-center w-100 text-center">
+                        <li class="nav-item w-100">
+                            <a href="/index" class="nav-link px-5 w-100 d-flex justify-content-center align-items-center">
+                                <i class="bi bi-speedometer2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="/locations" class="nav-link px-5 w-100 d-flex justify-content-center align-items-center">
+                                <i class="bi bi-geo-alt"></i>Locations
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="/maps" class="nav-link px-5 w-100 d-flex justify-content-center align-items-center">
+                                <i class="bi bi-map"></i>Maps
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="/reports" class="nav-link px-5 w-100 d-flex justify-content-center align-items-center">
+                                <i class="bi bi-file-earmark-bar-graph"></i>Reports
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="/analytics" class="nav-link active px-5 w-100 d-flex justify-content-center align-items-center">
+                                <i class="bi bi-bar-chart"></i>Analytics
+                            </a>
+                        </li>
+                        <li class="nav-item w-100">
+                            <a href="/settings" class="nav-link px-5 w-100 d-flex justify-content-center align-items-center">
+                                <i class="bi bi-gear"></i>Settings
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </nav>
 
         <!-- Main Content -->
-        <main class="col-md-9 col-lg-10 px-4">
+        <main class="col-12 col-lg-10 px-0">
+            <div class="dashboard-container">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">Analytics</div>
+                    <div class="search-bar"><input type="text" placeholder="search analytics..."></div>
+                    <div class="header-icons">
+                        <div class="header-icon-badge bell"><span class="badge">5</span>🔔</div>
+                        <div class="header-avatar"></div>
+                    </div>
+                </div>
+
+                <!-- Analytics Content -->
+                <div class="row g-3">
+                    <div class="col-12 col-lg-6">
+                        <div class="card p-3">
+                            <h6 class="mb-2">Temperature (High/Low)</h6>
+                            <canvas id="tempChart" height="160"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="card p-3">
+                            <h6 class="mb-2">Humidity</h6>
+                            <canvas id="humidityChart" height="160"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="card p-3">
+                            <h6 class="mb-2">UV Index</h6>
+                            <canvas id="uvChart" height="160"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="card p-3">
+                            <h6 class="mb-2">Wind (Speed & Gust)</h6>
+                            <canvas id="windChart" height="160"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="card p-3">
+                            <h6 class="mb-2">Wind Direction Sectors</h6>
+                            <canvas id="windDirChart" height="160"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="card p-3">
+                            <h6 class="mb-2">Cloud Cover vs Precip Probability</h6>
+                            <canvas id="cloudPrecipChart" height="160"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card p-3 d-flex flex-wrap gap-3">
+                            <div><strong>Location:</strong> <span id="anLocation">—</span></div>
+                            <div><strong>Max High:</strong> <span id="anMaxHigh">—</span></div>
+                            <div><strong>Avg Humidity:</strong> <span id="anAvgHumidity">—</span></div>
+                            <div><strong>Current AQI:</strong> <span id="anAQI">—</span> <span id="anAQICat" class="ms-1 badge bg-secondary">—</span></div>
+                            <div><strong>Alerts:</strong> <span id="anAlerts">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Leaflet.js JS -->
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-<script>
-
-</script>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="/scripts/common/analytics.js"></script>
 </body>
 </html>

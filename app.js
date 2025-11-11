@@ -151,39 +151,183 @@ app.post('/weather', async (req, res) => {
 
 // Serve index.html when accessing the root URL
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'views', 'index.html'));
 });
 
 // Serve index.html when accessing the /index URL
 app.get('/index', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'views', 'index.html'));
 });
 
 // Serve locations.html when accessing the /locations URL
 app.get('/locations', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'locations.html'));
+    res.sendFile(path.join(__dirname, 'public', 'views', 'locations.html'));
 });
 
 // Serve maps.html when accessing the /maps URL
 app.get('/maps', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'maps.html'));
+    res.sendFile(path.join(__dirname, 'public', 'views', 'maps.html'));
 });
 
 // Serve reports.html when accessing the /reports URL
 app.get('/reports', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'reports.html'));
+    res.sendFile(path.join(__dirname, 'public', 'views', 'reports.html'));
 });
 
 // Serve analytics.html when accessing the /analytics URL
 app.get('/analytics', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'analytics.html'));
+    res.sendFile(path.join(__dirname, 'public', 'views', 'analytics.html'));
 });
 
 // Serve settings.html when accessing the /settings URL
 app.get('/settings', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'settings.html'));
+    res.sendFile(path.join(__dirname, 'public', 'views', 'settings.html'));
 });
 
+
+// ---------------- Analytics Data Endpoint ----------------
+const cache = new Map(); // simple in-memory cache
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+function getCacheKey(lat, lon, units, days){
+    return `${Number(lat).toFixed(3)}:${Number(lon).toFixed(3)}:${units || 'us'}:${days || 7}`;
+}
+
+function uvBand(u){
+    if (u == null || isNaN(u)) return 'Unknown';
+    if (u <= 2) return 'Low';
+    if (u <= 5) return 'Moderate';
+    if (u <= 7) return 'High';
+    if (u <= 10) return 'Very High';
+    return 'Extreme';
+}
+
+function sectorFromBearing(b){
+    if (b == null || isNaN(b)) return 'N';
+    const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+    const idx = Math.floor(((b % 360) / 22.5) + 0.5) % 16;
+    return dirs[idx];
+}
+
+app.post('/analytics-data', async (req, res) => {
+    try {
+        const { latitude, longitude, units = 'us', days = 7 } = req.body || {};
+        if (!latitude || !longitude) {
+            return res.status(400).json({ error: 'latitude and longitude are required' });
+        }
+        const key = getCacheKey(latitude, longitude, units, days);
+        const now = Date.now();
+        const cached = cache.get(key);
+        if (cached && (now - cached.ts) < CACHE_TTL_MS){
+            return res.json(cached.data);
+        }
+
+        // Fetch sources
+        const iqAirUrl = `https://api.airvisual.com/v2/nearest_city?lat=${latitude}&lon=${longitude}&key=${IQ_API}`;
+        const pirateUrl = `https://api.pirateweather.net/forecast/${API_KEY}/${latitude},${longitude}?units=${units}`;
+
+        const [airResp, wxResp] = await Promise.all([
+            axios.get(iqAirUrl),
+            axios.get(pirateUrl)
+        ]);
+
+        const wx = wxResp.data || {};
+        const daily = (wx.daily && Array.isArray(wx.daily.data)) ? wx.daily.data.slice(0, days) : [];
+
+        if (!daily.length){
+            return res.status(502).json({ error: 'No daily data available from weather API' });
+        }
+
+        // Labels (weekday short)
+        const labels = daily.map(d => new Date(d.time * 1000).toLocaleDateString(undefined, { weekday: 'short' }));
+
+        // Temperature
+        const highs = daily.map(d => d.temperatureHigh ?? d.apparentTemperatureHigh ?? null);
+        const lows = daily.map(d => d.temperatureLow ?? d.apparentTemperatureLow ?? null);
+        const validHighs = highs.filter(v => typeof v === 'number');
+        const tempSummary = {
+            minHigh: validHighs.length ? Math.min(...validHighs) : null,
+            maxHigh: validHighs.length ? Math.max(...validHighs) : null,
+            avgHigh: validHighs.length ? Number((validHighs.reduce((a,b)=>a+b,0)/validHighs.length).toFixed(1)) : null
+        };
+
+        // Humidity (0..1)
+        const humidityVals = daily.map(d => (typeof d.humidity === 'number' ? Number((d.humidity * 100).toFixed(1)) : null));
+        const validHum = humidityVals.filter(v => typeof v === 'number');
+        const humiditySummary = { avg: validHum.length ? Number((validHum.reduce((a,b)=>a+b,0)/validHum.length).toFixed(1)) : null };
+
+        // UV
+        const uvMax = daily.map(d => d.uvIndex ?? null);
+        const countsByBand = uvMax.reduce((acc, u)=>{ const band = uvBand(u); acc[band]=(acc[band]||0)+1; return acc; }, {});
+
+        // Wind
+        const windSpeed = daily.map(d => d.windSpeed ?? null);
+        const windGust = daily.map(d => d.windGust ?? null);
+        const sectors = {};
+        daily.forEach(d => { const s = sectorFromBearing(d.windBearing); sectors[s] = (sectors[s]||0)+1; });
+
+        // Cloud vs Precip
+        const cloudPrecipPoints = daily.map((d, idx) => ({
+            cloud: typeof d.cloudCover === 'number' ? Number((d.cloudCover * 100).toFixed(1)) : null,
+            precip: typeof d.precipProbability === 'number' ? Number((d.precipProbability * 100).toFixed(1)) : null,
+            label: labels[idx]
+        })).filter(p => p.cloud != null && p.precip != null);
+
+        // Air Quality snapshot
+        const aqiData = airResp.data?.data;
+        const pollution = aqiData?.current?.pollution;
+        const aqiUS = pollution?.aqius ?? null;
+        let aqiCategory = 'Unknown';
+        if (typeof aqiUS === 'number'){
+            if (aqiUS <= 50) aqiCategory = 'Good';
+            else if (aqiUS <= 100) aqiCategory = 'Moderate';
+            else if (aqiUS <= 150) aqiCategory = 'USG';
+            else if (aqiUS <= 200) aqiCategory = 'Unhealthy';
+            else if (aqiUS <= 300) aqiCategory = 'Very Unhealthy';
+            else aqiCategory = 'Hazardous';
+        }
+
+        // Alerts summary
+        const alerts = Array.isArray(wx.alerts) ? wx.alerts : [];
+        const bySeverity = alerts.reduce((acc, a) => {
+            const title = (a.title || '').toLowerCase();
+            let sev = 'advisory';
+            if (title.includes('warning')) sev = 'warning';
+            else if (title.includes('watch')) sev = 'watch';
+            acc[sev] = (acc[sev]||0)+1; return acc;
+        }, {});
+
+        const data = {
+            meta: {
+                coords: { lat: Number(latitude), lon: Number(longitude) },
+                timezone: wx.timezone || 'Unknown',
+                days: daily.length,
+                units
+            },
+            temperature: { labels, highs, lows, summary: tempSummary },
+            humidity: { labels, values: humidityVals, summary: humiditySummary },
+            uv: { labels, max: uvMax, riskBands: Object.keys(countsByBand), countsByBand },
+            wind: { labels, speed: windSpeed, gust: windGust, dirSectors: sectors },
+            cloudVsPrecip: { points: cloudPrecipPoints },
+            airQuality: {
+                city: aqiData?.city || null,
+                state: aqiData?.state || null,
+                aqiUS,
+                category: aqiCategory,
+                primaryPollutant: pollution?.mainus || null
+            },
+            alerts: { count: alerts.length, bySeverity },
+            sourceAttribution: { weather: 'Pirate Weather', air: 'IQAir' }
+        };
+
+        cache.set(key, { ts: now, data });
+        return res.json(data);
+
+    } catch (err) {
+        console.error('Error in /analytics-data:', err?.response?.data || err.message || err);
+        return res.status(500).json({ error: 'Failed to compute analytics' });
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
